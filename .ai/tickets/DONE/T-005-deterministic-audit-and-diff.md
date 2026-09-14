@@ -1,6 +1,6 @@
 # T-005: Deterministic Math Validation & Diff Classifier
 
-* **Status**: TODO
+* **Status**: DONE
 * **Responsible Agent**: Backend Agent
 * **Dependencies**: T-002, T-004
 
@@ -25,5 +25,11 @@ Implement pure-code deterministic arithmetic auditing and substantive change cla
    - Filter out formatting-only / trivial changes (ignore whitespace and casing).
 
 ## Acceptance Criteria
-- [ ] Unit tests for math auditor with deliberate errors pass.
-- [ ] Unit tests for diff classifier covering all change types pass.
+- [x] Unit tests for math auditor with deliberate errors pass.
+- [x] Unit tests for diff classifier covering all change types pass.
+
+## Deliverables & Verification
+- `backend/app/services/auditor.py`: Pure Python arithmetic verification for items, subtotals, and grand totals with strict immutability.
+- `backend/app/services/diff_engine.py`: Commercial substantive change synthesizer with dual source references, formatting exemption (0 changes for formatting variants), and summary metrics calculation.
+- `backend/tests/test_auditor.py`: 12 unit tests verifying calculation error detection, immutability, and edge cases.
+- `backend/tests/test_diff_engine.py`: 6 unit tests covering ADDED, REMOVED, RENAMED (CONFIRMED & UNCERTAIN), QUANTITY_CHANGED, UNIT_PRICE_CHANGED, TOTAL_CHANGED, DELIVERY_DATE_CHANGED, formatting exemption, and summary metrics.
