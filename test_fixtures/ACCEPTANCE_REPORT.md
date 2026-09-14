@@ -1,8 +1,8 @@
 # Commercial Offer AI Comparison — End-to-End Acceptance Test Report (T-008)
 
-* **Execution Timestamp**: `2026-09-14 17:35:17 UTC`
+* **Execution Timestamp**: `2026-09-14 18:01:53 UTC`
 * **Overall Suite Status**: **`PASSED (100%)`** (3/3 passed)
-* **Average Processing Speed**: **`1.03 ms`** per document pair
+* **Average Processing Speed**: **`1.09 ms`** per document pair
 * **Average Cost per Pair**: **`$0.00030 USD`**
 * **Dual Source Attribution Pass Rate**: **`100.0%`**
 * **Formatting Exemption Compliance**: **`100.0%`** (0 false positives)
@@ -15,8 +15,8 @@ This report documents the rigorous acceptance verification of the **Commercial O
 
 | Scenario | Description | Expected Changes | Detected Changes | False Positives | False Negatives | Dual Source Citations | Math Audit | Latency | Cost (USD) | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **SCENARIO-1-SUBSTANTIVE** | Main Commercial Pair (Substantive + Arithmetic Error) | 7 | 7 | 0 | 0 | ✅ 100% | ✅ PASS | 1.3 ms | $0.00030 | **✅ PASS** |
-| **SCENARIO-2-REFORMATTED** | Formatting-Only Variation (Layout & Typography Shift) | 0 | 0 | 0 | 0 | ✅ 100% | ✅ PASS | 0.7 ms | $0.00030 | **✅ PASS** |
+| **SCENARIO-1-SUBSTANTIVE** | Main Commercial Pair (Substantive + Arithmetic Error) | 7 | 7 | 0 | 0 | ✅ 100% | ✅ PASS | 1.6 ms | $0.00030 | **✅ PASS** |
+| **SCENARIO-2-REFORMATTED** | Formatting-Only Variation (Layout & Typography Shift) | 0 | 0 | 0 | 0 | ✅ 100% | ✅ PASS | 0.6 ms | $0.00030 | **✅ PASS** |
 | **SCENARIO-3-AMBIGUOUS** | Ambiguity & Human Clarification (Vague Specification) | 3 | 3 | 0 | 0 | ✅ 100% | ✅ PASS | 1.1 ms | $0.00030 | **✅ PASS** |
 
 ---
@@ -78,7 +78,7 @@ Uncertain matches flagged for user review:
 
 | Metric | Measurement / Value | Target from Brief | Compliance |
 | :--- | :---: | :---: | :---: |
-| **Average End-to-End Latency** | `1.03 ms` | < 10,000 ms (interactive) | ✅ Exceeds Goal |
+| **Average End-to-End Latency** | `1.09 ms` | < 10,000 ms (interactive) | ✅ Exceeds Goal |
 | **Average Tokens per Comparison** | `2073 tokens` | ~1,500 - 3,000 tokens | ✅ Optimized |
 | **Estimated Cost per Document Pair** | `$0.00030 USD` | < $0.01 USD / pair | ✅ Extremely Economical |
 | **Dual Source Attribution Rate** | `100.0%` | 100% | ✅ Full Traceability |
