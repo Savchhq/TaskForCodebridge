@@ -1,6 +1,6 @@
 # T-003: PDF Text & Layout Extraction Engine
 
-* **Status**: TODO
+* **Status**: DONE
 * **Responsible Agent**: Backend Agent
 * **Dependencies**: T-001, T-002
 
@@ -22,6 +22,11 @@ Implement a robust, deterministic PDF text extraction service that parses text-b
 4. Unit tests in `backend/tests/test_pdf_extractor.py` verifying extraction on in-memory generated PDFs (`reportlab`) covering 1-page, 3-page, and edge-case inputs.
 
 ## Acceptance Criteria
-- [ ] `extract_pdf_pages` successfully extracts text and lines with page numbers.
-- [ ] `find_source_snippet` reliably locates text and builds valid `SourceReference`.
-- [ ] All tests in `backend/tests/test_pdf_extractor.py` pass.
+- [x] `extract_pdf_pages` successfully extracts text and lines with page numbers.
+- [x] `find_source_snippet` reliably locates text and builds valid `SourceReference`.
+- [x] All tests in `backend/tests/test_pdf_extractor.py` pass.
+
+## Deliverables & Verification
+- `backend/app/services/pdf_extractor.py`: Extraction and dual-source citation locator functions (`extract_pdf_pages`, `find_source_snippet`, `extract_full_text`).
+- `backend/app/services/__init__.py`: Exporting service functions.
+- `backend/tests/test_pdf_extractor.py`: 20 unit tests with reportlab-generated 1-page, 3-page, table, empty-page, invalid input, and snippet matching tests. All 41 backend tests pass.
