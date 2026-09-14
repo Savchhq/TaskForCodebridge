@@ -1,81 +1,215 @@
-import { useEffect, useState } from 'react'
-import { FileText, CheckCircle2, AlertCircle, ArrowRightLeft } from 'lucide-react'
-
-interface HealthResponse {
-  status: string
-  service: string
-  model: string
-}
+import { useState, useEffect } from 'react'
+import { Navbar } from './components/Navbar'
+import { UploadSection } from './components/UploadSection'
+import { SummaryBar } from './components/SummaryBar'
+import { MathDiscrepancyAlert } from './components/MathDiscrepancyAlert'
+import { DocumentOverview } from './components/DocumentOverview'
+import { ChangesTable } from './components/ChangesTable'
+import { SourceCitationModal } from './components/SourceCitationModal'
+import { ComparisonReport, DetectedChange } from './types'
+import { checkBackendHealth, compareOffers, fetchSampleFile, HealthInfo } from './services/api'
+import { ArrowDown, ShieldCheck, CheckCircle } from 'lucide-react'
 
 export default function App() {
-  const [health, setHealth] = useState<HealthResponse | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
+  // Backend health status
+  const [health, setHealth] = useState<HealthInfo | null>(null)
+  const [healthLoading, setHealthLoading] = useState<boolean>(true)
+  const [healthError, setHealthError] = useState<string | null>(null)
+
+  // Files & comparison configuration
+  const [originalFile, setOriginalFile] = useState<File | null>(null)
+  const [revisedFile, setRevisedFile] = useState<File | null>(null)
+  const [provider, setProvider] = useState<string>('auto')
+
+  // Execution states
+  const [comparing, setComparing] = useState<boolean>(false)
+  const [loadingScenario, setLoadingScenario] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  // Comparison Results
+  const [report, setReport] = useState<ComparisonReport | null>(null)
+  const [activeCitationChange, setActiveCitationChange] = useState<DetectedChange | null>(null)
+
+  // Check health on mount
   useEffect(() => {
-    fetch('/health')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json()
-      })
+    checkBackendHealth()
       .then((data) => {
         setHealth(data)
-        setLoading(false)
+        setHealthLoading(false)
       })
       .catch((err) => {
-        setError(err.message)
-        setLoading(false)
+        setHealthError(err.message)
+        setHealthLoading(false)
       })
   }, [])
 
-  return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
-              <ArrowRightLeft className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900">Commercial Offer PDF Comparator</h1>
-              <p className="text-xs text-slate-500">AI-First Product Builder MVP</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2 text-xs">
-            <span className="text-slate-400">Backend:</span>
-            {loading ? (
-              <span className="text-slate-400">Checking...</span>
-            ) : error ? (
-              <span className="flex items-center text-red-600 font-medium">
-                <AlertCircle className="w-3.5 h-3.5 mr-1" /> Disconnected
-              </span>
-            ) : (
-              <span className="flex items-center text-emerald-600 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Connected ({health?.model})
-              </span>
-            )}
-          </div>
-        </div>
-      </header>
+  // Quick Preset Scenarios Loader
+  const handleLoadScenario = async (scenarioId: 'scenario_1' | 'scenario_2' | 'scenario_3') => {
+    try {
+      setLoadingScenario(scenarioId)
+      setError(null)
 
-      {/* Main content placeholder */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center max-w-2xl mx-auto">
-          <div className="mx-auto w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mb-4">
-            <FileText className="w-6 h-6" />
+      let origName = 'offer_v1.pdf'
+      let revName = 'offer_v2_substantive.pdf'
+
+      if (scenarioId === 'scenario_2') {
+        revName = 'offer_v1_reformatted.pdf'
+      } else if (scenarioId === 'scenario_3') {
+        revName = 'offer_v2_ambiguous.pdf'
+      }
+
+      const [origF, revF] = await Promise.all([
+        fetchSampleFile(origName),
+        fetchSampleFile(revName),
+      ])
+
+      setOriginalFile(origF)
+      setRevisedFile(revF)
+
+      // Automatically execute comparison for maximum demo convenience
+      setComparing(true)
+      const res = await compareOffers(origF, revF, provider)
+      setReport(res)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      setError(`Failed to load scenario: ${msg}`)
+    } finally {
+      setLoadingScenario(null)
+      setComparing(false)
+    }
+  }
+
+  // Trigger Comparison
+  const handleCompare = async () => {
+    if (!originalFile || !revisedFile) {
+      setError('Please provide both the original and revised PDF documents.')
+      return
+    }
+
+    try {
+      setComparing(true)
+      setError(null)
+      const res = await compareOffers(originalFile, revisedFile, provider)
+      setReport(res)
+      // Scroll down to results smoothly
+      setTimeout(() => {
+        const resultsEl = document.getElementById('comparison-results')
+        if (resultsEl) {
+          resultsEl.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      setError(msg)
+    } finally {
+      setComparing(false)
+    }
+  }
+
+  // Reset comparison
+  const handleReset = () => {
+    setReport(null)
+    setError(null)
+    setOriginalFile(null)
+    setRevisedFile(null)
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+      {/* Top Navbar */}
+      <Navbar
+        health={health}
+        healthLoading={healthLoading}
+        healthError={healthError}
+        selectedProvider={provider}
+        onReset={handleReset}
+        hasReport={report !== null}
+      />
+
+      {/* Main Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Upload Section */}
+        <UploadSection
+          originalFile={originalFile}
+          revisedFile={revisedFile}
+          onSelectOriginal={setOriginalFile}
+          onSelectRevised={setRevisedFile}
+          provider={provider}
+          onProviderChange={setProvider}
+          onCompare={handleCompare}
+          onLoadScenario={handleLoadScenario}
+          loadingScenario={loadingScenario}
+          comparing={comparing}
+          error={error}
+        />
+
+        {/* Results Section */}
+        {report && (
+          <div id="comparison-results" className="space-y-6 animate-in fade-in duration-300">
+            {/* Results Title Banner */}
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <div className="flex items-center space-x-2">
+                <div className="p-1.5 bg-indigo-600 text-white rounded-lg">
+                  <ArrowDown className="w-4 h-4" />
+                </div>
+                <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+                  Comparison &amp; Audit Results
+                </h2>
+              </div>
+              <div className="flex items-center space-x-2 text-xs text-slate-500">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>Deterministic Zero-Hallucination Audit</span>
+              </div>
+            </div>
+
+            {/* 1. Summary Metrics Bar */}
+            <SummaryBar report={report} />
+
+            {/* 2. Arithmetic Discrepancy Alert */}
+            <MathDiscrepancyAlert
+              originalAudit={report.original_audit}
+              revisedAudit={report.revised_audit}
+              currency={report.summary.currency || report.original_document?.currency || 'USD'}
+            />
+
+            {/* 3. Document Headers Overview */}
+            <DocumentOverview
+              originalDoc={report.original_document}
+              revisedDoc={report.revised_document}
+            />
+
+            {/* 4. Substantive Changes Table */}
+            <ChangesTable
+              changes={report.changes}
+              onOpenCitation={setActiveCitationChange}
+              currency={report.summary.currency || report.original_document?.currency || 'USD'}
+            />
           </div>
-          <h2 className="text-lg font-semibold text-slate-900 mb-2">
-            Scaffolding Ready (T-001)
-          </h2>
-          <p className="text-sm text-slate-600 mb-6">
-            Backend and Frontend boilerplates are established. Data contracts, PDF extractor, and AI pipeline will be plugged in via subsequent tickets.
-          </p>
-          <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-            Phase 1: Project Setup Complete
+        )}
+      </main>
+
+      {/* Dual Source Reference Modal */}
+      <SourceCitationModal
+        change={activeCitationChange}
+        onClose={() => setActiveCitationChange(null)}
+      />
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div>
+            Codebridge AI-First Product Builder &bull; Commercial Offer Comparison Engine
+          </div>
+          <div className="flex items-center space-x-3 text-slate-500">
+            <span className="flex items-center">
+              <CheckCircle className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+              Verifiable Dual Citations
+            </span>
+            <span>&bull;</span>
+            <span>FastAPI + React 18 + Gemini Flash</span>
           </div>
         </div>
-      </main>
+      </footer>
     </div>
   )
 }
