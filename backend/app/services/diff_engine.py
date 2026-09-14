@@ -107,6 +107,13 @@ def synthesize_comparison_report(
         original_doc.items, revised_doc.items
     )
 
+    # Identify any revised line items that contain arithmetic discrepancies
+    erroneous_rev_items = {
+        d.location.replace("Line item: ", "").strip().lower()
+        for d in revised_audit.discrepancies
+        if d.location.startswith("Line item:")
+    }
+
     # 4. Substantive Change Classification
     changes: list[DetectedChange] = []
 
@@ -206,9 +213,18 @@ def synthesize_comparison_report(
                 )
 
             # 3. Check Unit Price Changed
+            # If line item has a calculation error in revised doc but line total is unchanged,
+            # it is a source arithmetic discrepancy rather than an agreed commercial change.
+            is_math_error_item = (
+                rev.name.strip().lower() in erroneous_rev_items
+                and orig.total_price is not None
+                and rev.total_price is not None
+                and abs(orig.total_price - rev.total_price) <= 0.01
+            )
             price_changed = False
             if (
-                orig.unit_price is not None
+                not is_math_error_item
+                and orig.unit_price is not None
                 and rev.unit_price is not None
                 and abs(orig.unit_price - rev.unit_price) > 0.01
             ):
