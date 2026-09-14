@@ -22,6 +22,9 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 
 
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+
 @app.get("/health")
 def health_check():
     return {
@@ -29,3 +32,8 @@ def health_check():
         "service": settings.PROJECT_NAME,
         "model": settings.GEMINI_MODEL,
     }
+
+# Mount built frontend SPA if available (for production deployment)
+frontend_dist = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
+if frontend_dist.exists() and (frontend_dist / "index.html").exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="frontend")
