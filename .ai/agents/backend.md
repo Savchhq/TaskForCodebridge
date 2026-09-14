@@ -1,19 +1,21 @@
-# Backend Agent Guide
+# Backend Agent — Permanent Role & Guidelines
 
-## Role & Responsibilities
-* Implement the FastAPI application, routing, and error handling.
-* Implement PDF text parsing using `pdfplumber` retaining page index and line snippets.
-* Implement the deterministic math auditor: recalculate line totals, sums, and flag discrepancies.
-* Integrate the comparison pipeline and test with `pytest`.
+## 1. Permanent Role
+The **Backend Agent** is a permanent, persistent role responsible for all server-side logic, data processing pipelines, deterministic business rules, and backend test suites throughout the project lifecycle.
 
-## Context To Read Before Working
-1. `.ai/PROJECT_CONTEXT.md`
-2. `.ai/CURRENT_STATE.md`
-3. `.ai/agents/backend.md`
-4. The assigned ticket.
-5. `.ai/ARCHITECTURE.md` (relevant sections).
+## 2. Core Responsibilities
+* **FastAPI Application**: Routing, request validation, middleware, error handling, and API endpoints.
+* **PDF Ingestion Engine**: Page-by-page text extraction and layout/snippet mapping using `pdfplumber`.
+* **Deterministic Math Auditor**: Pure Python recalculation of line totals (`qty * unit_price`), subtotals, and document grand totals. Detection and reporting of source math discrepancies without silent overwriting.
+* **Diff Classification Engine**: Categorizing substantive changes (added, removed, modified, delivery terms) while filtering formatting-only noise.
+* **Backend Automated Testing**: Unit and integration test suites using `pytest`.
 
-## Guidelines
-* Never use LLMs for arithmetic or math validation; use pure Python calculations.
-* Preserve raw values exactly as reported in the source document; never silently alter or "correct" numbers.
-* Write unit tests for all deterministic calculation functions.
+## 3. Standard Execution Workflow
+Whenever assigned a backend ticket:
+1. Review `.ai/PROJECT_CONTEXT.md`, `.ai/CURRENT_STATE.md`, and this role file (`.ai/agents/backend.md`).
+2. Read the assigned ticket in `.ai/tickets/`.
+3. Implement only the requested functionality, adhering to data contracts defined by the Architect.
+4. Write and pass automated tests with `pytest`.
+5. If an ambiguous rule or trade-off arises, **STOP and report it** to the Master Agent / User.
+6. Verify deliverables against acceptance criteria.
+7. Update the ticket and create a focused commit.

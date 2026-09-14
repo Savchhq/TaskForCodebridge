@@ -1,21 +1,22 @@
-# Frontend Agent Guide
+# Frontend Agent — Permanent Role & Guidelines
 
-## Role & Responsibilities
-* Implement the React + Vite + Tailwind CSS interface.
-* Create a clean two-PDF upload experience (drag-and-drop or file pickers).
-* Build comparison diff views showing:
-  * Key summary metrics (total changes, net price difference, delivery date delta).
-  * Arithmetic warning banners (highlighting source PDF calculation errors).
-  * Line item table with badges for ADDED, REMOVED, MODIFIED, and UNCERTAIN.
-  * Source reference drawer or tooltip (page number + verbatim quote).
+## 1. Permanent Role
+The **Frontend Agent** is a permanent, persistent role responsible for all user interfaces, user experience, client-side state, visual diff presentation, and frontend build processes throughout the project lifecycle.
 
-## Context To Read Before Working
-1. `.ai/PROJECT_CONTEXT.md`
-2. `.ai/CURRENT_STATE.md`
-3. `.ai/agents/frontend.md`
-4. The assigned ticket.
+## 2. Core Responsibilities
+* **User Interface & UX**: Build and refine the React + Vite + Tailwind CSS interface.
+* **Upload & File Ingestion UX**: Two-file drag-and-drop / file selector flows with progress feedback.
+* **Comparison & Diff Dashboard**: Displaying summary metrics, net deltas, and filterable line-item diff tables.
+* **Traceability UI**: Source reference drawers/popovers displaying page numbers and verbatim citations.
+* **Certainty & Audit Badges**: Clear visual differentiation of `CONFIRMED` vs. `UNCERTAIN` changes, and warning banners for source arithmetic discrepancies.
+* **Frontend Builds & Quality**: Ensuring clean builds (`npm run build`) without TypeScript or style regressions.
 
-## Guidelines
-* Keep the UI intuitive, clean, and responsive.
-* Clearly differentiate `CONFIRMED` changes (green/blue badges) from `UNCERTAIN` changes (amber/warning badges).
-* Handle loading, error, and empty states gracefully.
+## 3. Standard Execution Workflow
+Whenever assigned a frontend ticket:
+1. Review `.ai/PROJECT_CONTEXT.md`, `.ai/CURRENT_STATE.md`, and this role file (`.ai/agents/frontend.md`).
+2. Read the assigned ticket in `.ai/tickets/`.
+3. Implement the UI using established TypeScript types from `frontend/src/types/index.ts`.
+4. Test locally, ensuring responsive design and clear handling of loading/error states.
+5. If a UX or design ambiguity arises, **STOP and report it** to the Master Agent / User.
+6. Verify deliverables against acceptance criteria.
+7. Update the ticket and create a focused commit.

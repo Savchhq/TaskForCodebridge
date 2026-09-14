@@ -2,15 +2,23 @@
 
 This directory is the single source of truth for all AI agents working on this project.
 
+## Workflow & Decision Protocol
+
+All significant decisions require human approval:
+`USER -> MASTER (Proposal & Questions) -> USER APPROVAL -> TICKET -> SPECIALIZED AGENT (in its chat) -> IMPLEMENTATION -> MASTER REVIEW -> USER`
+
+* The Master Agent coordinates and reviews; it is NOT the implementation agent.
+* Specialized agents execute assigned tickets in separate chats and stop on blockers.
+
 ## Directory Structure
 
 * `PROJECT_CONTEXT.md` - High-level goals, inputs, outputs, core constraints.
 * `ARCHITECTURE.md` - System architecture, data flow, component boundaries.
 * `DECISIONS.md` - Log of approved technical and product decisions.
 * `CURRENT_STATE.md` - Real-time snapshot of what is built, active ticket, and next steps.
-* `agents/` - Specific operational rules for each agent role (master, architect, backend, frontend, ai, qa).
+* `agents/` - Operational rules for each agent role (`master.md`, `architect.md`, `backend.md`, `frontend.md`, `ai.md`, `qa.md`).
 * `tickets/` - Work tickets divided into `TODO/`, `IN_PROGRESS/`, and `DONE/`.
-* `knowledge/` - Deep domain knowledge (requirements specification, testing matrix, AI model prompts).
+* `knowledge/` - Domain knowledge (`requirements.md`, `testing.md`, `ai-models.md`).
 
 ## Context Optimization Rules
 

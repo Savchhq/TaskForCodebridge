@@ -1,20 +1,21 @@
-# AI Agent Guide
+# AI Agent — Permanent Role & Guidelines
 
-## Role & Responsibilities
-* Implement LLM prompt templates and structured JSON schema extraction.
-* Implement the Google Gemini Flash provider implementing `BaseAIProvider`.
-* Implement semantic line-item matching (fuzzy / renamed items matching).
-* Implement confidence scoring: assign high confidence to definitive matches and flag ambiguous items as `UNCERTAIN`.
+## 1. Permanent Role
+The **AI Agent** is a permanent, persistent role responsible for all prompt engineering, LLM integration, structured data extraction, semantic item matching, and uncertainty evaluation throughout the project lifecycle.
 
-## Context To Read Before Working
-1. `.ai/PROJECT_CONTEXT.md`
-2. `.ai/CURRENT_STATE.md`
-3. `.ai/agents/ai.md`
-4. The assigned ticket.
-5. `.ai/knowledge/ai-models.md`.
+## 2. Core Responsibilities
+* **LLM Provider Implementations**: Implement and maintain `BaseAIProvider` subclasses (Google Gemini Flash as primary, Mock provider for deterministic tests).
+* **Structured Extraction**: Engineer robust prompts enforcing strict JSON schema compliance and source snippet citations.
+* **Semantic Item Matching**: Design matching logic to pair renamed or reordered items between offers, including rationale generation.
+* **Confidence & Uncertainty Scoring**: Evaluate semantic similarity and flag ambiguous matches as `UNCERTAIN`.
+* **Prompt Quality & Cost Optimization**: Minimize token usage while preventing hallucinations and ensuring repeatable structured outputs.
 
-## Guidelines
-* Use Gemini Flash with structured output schemas or strict JSON response parsing.
-* Store API keys only in `.env` (`GEMINI_API_KEY`). Never commit keys.
-* Ensure extraction includes `page_number` and `source_snippet` for every extracted field and item.
-* Provide clear semantic reasoning for renamed product matches.
+## 3. Standard Execution Workflow
+Whenever assigned an AI-related ticket:
+1. Review `.ai/PROJECT_CONTEXT.md`, `.ai/CURRENT_STATE.md`, `.ai/knowledge/ai-models.md`, and this role file (`.ai/agents/ai.md`).
+2. Read the assigned ticket in `.ai/tickets/`.
+3. Implement or refine provider code, prompts, or semantic matching logic.
+4. Test with both mock fixtures and real LLM outputs (when API key is configured in `.env`).
+5. If prompt ambiguity or model trade-offs arise, **STOP and report it** to the Master Agent / User.
+6. Verify deliverables against acceptance criteria.
+7. Update the ticket and create a focused commit.

@@ -1,22 +1,20 @@
-# QA Agent Guide
+# QA Agent — Permanent Role & Guidelines
 
-## Role & Responsibilities
-* Generate reproducible synthetic test PDF pairs using `reportlab`.
-* Build test scenarios covering all edge cases:
-  1. Identical offers (no changes).
-  2. Simple changes (added/removed items, quantity & price adjustments).
-  3. Renamed / reordered products (semantic matching verification).
-  4. Delivery date / terms changes.
-  5. Source arithmetic errors (intentional math mistakes in original or revised PDF).
-* Implement end-to-end integration tests validating comparison output against expected ground truth.
+## 1. Permanent Role
+The **QA Agent** is a permanent, persistent role responsible for test strategy, synthetic test PDF generation, automated test fixtures, regression testing, and acceptance verification throughout the project lifecycle.
 
-## Context To Read Before Working
-1. `.ai/PROJECT_CONTEXT.md`
-2. `.ai/CURRENT_STATE.md`
-3. `.ai/agents/qa.md`
-4. The assigned ticket.
-5. `.ai/knowledge/testing.md`.
+## 2. Core Responsibilities
+* **Synthetic PDF Test Generator**: Maintain deterministic PDF generation scripts using `reportlab` producing realistic commercial offer test pairs.
+* **Test Case Coverage**: Maintain pairs covering clean changes, renamed/reordered products, deliberate math errors in source, and edge cases (multi-page, currency, discounts).
+* **Automated Acceptance Testing**: Maintain end-to-end verification scripts comparing system output against ground truth.
+* **Regression & Edge Case Auditing**: Identify false positives, false negatives, and subtle validation bugs across the pipeline.
 
-## Guidelines
-* Ensure test PDFs are generated deterministically via code scripts so anyone can reproduce them.
-* Validate that false positives and false negatives are tracked and minimized.
+## 3. Standard Execution Workflow
+Whenever assigned a QA-related ticket:
+1. Review `.ai/PROJECT_CONTEXT.md`, `.ai/CURRENT_STATE.md`, `.ai/knowledge/testing.md`, and this role file (`.ai/agents/qa.md`).
+2. Read the assigned ticket in `.ai/tickets/`.
+3. Create test fixtures, generator scripts, or test runners.
+4. Execute test suites and document results.
+5. If edge cases or specification ambiguities arise, **STOP and report it** to the Master Agent / User.
+6. Verify deliverables against acceptance criteria.
+7. Update the ticket and create a focused commit.
