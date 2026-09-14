@@ -72,6 +72,13 @@ export interface DetectedChange {
   revised_source_ref?: SourceReference | null;
 }
 
+export interface TokenUsage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  estimated_cost_usd: number;
+}
+
 export interface ComparisonSummary {
   total_changes?: number;
   added_items_count?: number;
@@ -82,6 +89,9 @@ export interface ComparisonSummary {
   original_grand_total?: number | null;
   revised_grand_total?: number | null;
   currency?: string | null;
+  processing_time_ms?: number | null;
+  token_usage?: TokenUsage | null;
+  estimated_cost_usd?: number | null;
   [key: string]: unknown;
 }
 
@@ -92,6 +102,9 @@ export interface ComparisonReport {
   revised_audit: AuditReport;
   changes: DetectedChange[];
   summary: ComparisonSummary;
+  processing_time_ms?: number | null;
+  token_usage?: TokenUsage | null;
+  estimated_cost_usd?: number | null;
 }
 
 export interface PageContent {

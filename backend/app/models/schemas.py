@@ -97,6 +97,16 @@ class DetectedChange(BaseModel):
     revised_source_ref: SourceReference | None = Field(default=None, description="Source reference in revised PDF")
 
 
+class TokenUsage(BaseModel):
+    """Token consumption and estimated cost metrics for LLM operations."""
+    model_config = ConfigDict(extra="ignore")
+
+    prompt_tokens: int = Field(default=0, ge=0, description="Tokens in prompt / input")
+    completion_tokens: int = Field(default=0, ge=0, description="Tokens generated in completion / output")
+    total_tokens: int = Field(default=0, ge=0, description="Total tokens consumed")
+    estimated_cost_usd: float = Field(default=0.0, ge=0.0, description="Estimated total cost in USD")
+
+
 class ComparisonSummary(BaseModel):
     """Summary metrics of the comparison between two offers."""
     model_config = ConfigDict(extra="allow")
@@ -110,6 +120,9 @@ class ComparisonSummary(BaseModel):
     original_grand_total: float | None = Field(default=None, description="Original grand total")
     revised_grand_total: float | None = Field(default=None, description="Revised grand total")
     currency: str | None = Field(default=None, description="Currency of comparison")
+    processing_time_ms: float | None = Field(default=None, description="Total processing time in milliseconds")
+    token_usage: TokenUsage | None = Field(default=None, description="Token usage breakdown")
+    estimated_cost_usd: float | None = Field(default=None, description="Estimated cost in USD")
 
 
 class ComparisonReport(BaseModel):
@@ -122,6 +135,9 @@ class ComparisonReport(BaseModel):
     revised_audit: AuditReport = Field(..., description="Arithmetic audit for revised offer")
     changes: list[DetectedChange] = Field(default_factory=list, description="Substantive changes detected")
     summary: ComparisonSummary | dict[str, Any] = Field(default_factory=ComparisonSummary, description="Summary statistics")
+    processing_time_ms: float | None = Field(default=None, description="Total processing time in milliseconds")
+    token_usage: TokenUsage | None = Field(default=None, description="Token usage breakdown")
+    estimated_cost_usd: float | None = Field(default=None, description="Estimated cost in USD")
 
 
 class PageContent(BaseModel):

@@ -15,6 +15,7 @@ from app.models.schemas import (
     OfferDocument,
     PageContent,
     SourceReference,
+    TokenUsage,
 )
 
 __all__ = [
@@ -30,4 +31,5 @@ __all__ = [
     "OfferDocument",
     "PageContent",
     "SourceReference",
+    "TokenUsage",
 ]

@@ -19,6 +19,7 @@ from app.models.schemas import (
     OfferDocument,
     PageContent,
     SourceReference,
+    TokenUsage,
 )
 
 
@@ -181,6 +182,34 @@ class TestChangeClassification:
         assert change.revised_value == 10.0
 
 
+class TestTokenUsage:
+    def test_default_token_usage(self):
+        usage = TokenUsage()
+        assert usage.prompt_tokens == 0
+        assert usage.completion_tokens == 0
+        assert usage.total_tokens == 0
+        assert usage.estimated_cost_usd == 0.0
+
+    def test_custom_token_usage(self):
+        usage = TokenUsage(
+            prompt_tokens=1500,
+            completion_tokens=350,
+            total_tokens=1850,
+            estimated_cost_usd=0.00045,
+        )
+        assert usage.prompt_tokens == 1500
+        assert usage.completion_tokens == 350
+        assert usage.total_tokens == 1850
+        assert usage.estimated_cost_usd == 0.00045
+
+    def test_negative_values_rejected(self):
+        with pytest.raises(ValidationError):
+            TokenUsage(prompt_tokens=-1)
+
+        with pytest.raises(ValidationError):
+            TokenUsage(estimated_cost_usd=-0.01)
+
+
 class TestComparisonReport:
     def test_full_comparison_report(self):
         orig_audit = AuditReport(document_name="Original", is_valid=True)
@@ -196,6 +225,13 @@ class TestComparisonReport:
             explanation="Unit price increased by $2.00",
         )
 
+        token_metrics = TokenUsage(
+            prompt_tokens=2000,
+            completion_tokens=500,
+            total_tokens=2500,
+            estimated_cost_usd=0.00075,
+        )
+
         summary = ComparisonSummary(
             total_changes=1,
             modified_items_count=1,
@@ -204,6 +240,9 @@ class TestComparisonReport:
             original_grand_total=100.0,
             revised_grand_total=120.0,
             currency="USD",
+            processing_time_ms=1250.5,
+            token_usage=token_metrics,
+            estimated_cost_usd=0.00075,
         )
 
         report = ComparisonReport(
@@ -211,16 +250,25 @@ class TestComparisonReport:
             revised_audit=rev_audit,
             changes=[change],
             summary=summary,
+            processing_time_ms=1250.5,
+            token_usage=token_metrics,
+            estimated_cost_usd=0.00075,
         )
 
         assert report.original_audit.is_valid is True
         assert len(report.changes) == 1
         assert report.summary.total_changes == 1
+        assert report.processing_time_ms == 1250.5
+        assert report.token_usage.total_tokens == 2500
+        assert report.estimated_cost_usd == 0.00075
+        assert report.summary.token_usage.estimated_cost_usd == 0.00075
 
         # JSON round-trip
         json_data = report.model_dump_json()
         restored = ComparisonReport.model_validate_json(json_data)
         assert restored.changes[0].change_type == ChangeType.UNIT_PRICE_CHANGED
+        assert restored.processing_time_ms == 1250.5
+        assert restored.token_usage.total_tokens == 2500
 
     def test_comparison_report_accepts_dict_summary(self):
         orig_audit = AuditReport(document_name="Original", is_valid=True)
@@ -229,9 +277,18 @@ class TestComparisonReport:
             original_audit=orig_audit,
             revised_audit=rev_audit,
             changes=[],
-            summary={"custom_key": "custom_value", "total_changes": 3},
+            summary={
+                "custom_key": "custom_value",
+                "total_changes": 3,
+                "processing_time_ms": 900.0,
+                "estimated_cost_usd": 0.0002,
+            },
+            processing_time_ms=900.0,
+            estimated_cost_usd=0.0002,
         )
         assert report.summary.total_changes == 3
+        assert report.processing_time_ms == 900.0
+        assert report.estimated_cost_usd == 0.0002
 
 
 class TestAuxiliarySchemas:
