@@ -45,23 +45,37 @@ Located in `backend/app/services/ai/base.py`:
 ```python
 class BaseAIProvider(ABC):
     @abstractmethod
-    async def extract_offer_data(self, pdf_text_content: list[PageContent]) -> RawOfferData:
+    async def extract_offer_data(self, pages: list[PageContent]) -> OfferDocument:
         """Extract structured commercial data with source snippet mapping."""
         pass
 
     @abstractmethod
     async def match_line_items(
         self, 
-        original_items: list[ExtractedItem], 
-        revised_items: list[ExtractedItem]
-    ) -> list[MatchDecision]:
+        original_items: list[LineItem], 
+        revised_items: list[LineItem]
+    ) -> list[ItemMatch]:
         """Match items semantically, detecting renames with confidence scoring."""
         pass
 ```
 * Default implementation: `GeminiFlashProvider` (`google-genai` SDK or `google-generativeai`).
 * Fallback/mock provider for offline/deterministic testing: `MockAIProvider`.
 
-## 3. Directory Layout
+## 3. Domain Data Contracts & Schemas
+
+The system relies on strict Pydantic v2 schemas in `backend/app/models/schemas.py` and mirrored TypeScript types in `frontend/src/types/index.ts`:
+
+* **`SourceReference`**: Citation containing 1-indexed `page_number` and verbatim `snippet`.
+* **`LineItem`**: Product/service item with `name`, `description`, `quantity`, `unit`, `unit_price`, `total_price`, and `source_ref`.
+* **`OfferDocument`**: Extracted offer metadata (`vendor_name`, `client_name`, `offer_id`, `offer_date`, `delivery_date`, `currency`), `items: list[LineItem]`, `subtotal`, `tax`, and `grand_total`.
+* **`MathDiscrepancy` & `AuditReport`**: Deterministic arithmetic audit results (`expected_value`, `actual_value`, `location`, `message`, `is_valid`).
+* **`ChangeType`**: Enum with `ADDED`, `REMOVED`, `RENAMED`, `QUANTITY_CHANGED`, `UNIT_PRICE_CHANGED`, `TOTAL_CHANGED`, `DELIVERY_DATE_CHANGED`.
+* **`ConfidenceLevel`**: Enum with `CONFIRMED` and `UNCERTAIN`.
+* **`DetectedChange`**: Substantive diff record with change type, original/revised values, confidence level, explanation, and source references.
+* **`ComparisonSummary` & `ComparisonReport`**: Comprehensive comparison output encapsulating audits, diff items, and metrics.
+* **`PageContent` & `ItemMatch`**: Auxiliary schemas for PDF text extraction and semantic item matching.
+
+## 4. Directory Layout
 
 ```
 TaskForCodebridge/

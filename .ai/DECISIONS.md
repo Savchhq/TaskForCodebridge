@@ -30,3 +30,12 @@
   * **Deterministic Python Scope**: Arithmetic recalculation (`qty * unit_price`, sum of items vs. grand total), discrepancy detection.
   * **Integrity Rule**: Never allow AI to silently overwrite or "fix" bad math in the source document. Raw values are preserved and flagged as math discrepancies.
 * **Rationale**: Eliminates arithmetic hallucination and guarantees auditing fidelity.
+
+## ADR-005: Domain Data Contracts & Type Mirroring
+* **Date**: 2026-09-14
+* **Decision**:
+  * Implement unified domain contracts in `backend/app/models/schemas.py` using Pydantic v2.
+  * Explicitly mirror schemas as TypeScript interfaces and string enums in `frontend/src/types/index.ts`.
+  * Support `extra="ignore"` for domain entities (`LineItem`, `OfferDocument`, `ComparisonReport`) and `extra="allow"` for `ComparisonSummary` to facilitate extensibility.
+  * Standardize all substantive diff operations around `ChangeType` and `ConfidenceLevel` string enums to ensure clean JSON serialization and interoperability.
+* **Rationale**: Strong type safety across the Python backend and React frontend prevents contract drift, simplifies frontend rendering of diffs and audits, and provides early validation for AI extraction outputs.

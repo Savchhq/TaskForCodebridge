@@ -1,6 +1,6 @@
 # T-002: Data Contracts & Domain Schemas
 
-* **Status**: TODO
+* **Status**: DONE
 * **Responsible Agent**: Architect Agent
 * **Dependencies**: T-001
 
@@ -19,6 +19,12 @@ Define type-safe Pydantic models for extracted PDF data, deterministic calculati
 9. `ComparisonReport`: `original_audit: AuditReport`, `revised_audit: AuditReport`, `changes: list[DetectedChange]`, `summary: dict`
 
 ## Acceptance Criteria
-- [ ] Models defined in `backend/app/models/schemas.py`.
-- [ ] Schema validation unit tests passing in `backend/tests/test_schemas.py`.
-- [ ] TypeScript type declarations generated or mirrored in `frontend/src/types/index.ts`.
+- [x] Models defined in `backend/app/models/schemas.py`.
+- [x] Schema validation unit tests passing in `backend/tests/test_schemas.py`.
+- [x] TypeScript type declarations generated or mirrored in `frontend/src/types/index.ts`.
+
+## Deliverables & Verification
+- `backend/app/models/schemas.py` & `backend/app/models/__init__.py`: Full Pydantic v2 schemas.
+- `backend/tests/test_schemas.py`: 20 unit tests covering constraints, validations, enums, serialization. All passed (21 total backend tests pass).
+- `frontend/src/types/index.ts`: Full mirrored TypeScript definitions; `npm run build` succeeds cleanly.
+
