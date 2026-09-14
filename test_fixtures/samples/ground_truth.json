@@ -1,0 +1,169 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "Authoritative ground truth for commercial offer comparison test scenarios",
+    "currency": "USD",
+    "max_pages_per_doc": 3
+  },
+  "scenarios": {
+    "scenario_1_substantive": {
+      "scenario_id": "SCENARIO-1-SUBSTANTIVE",
+      "title": "Main Commercial Pair: Substantive Changes, Reordering & Arithmetic Error",
+      "baseline_document": "offer_v1.pdf",
+      "revised_document": "offer_v2_substantive.pdf",
+      "expected_substantive_changes_count": 7,
+      "expected_header_changes": [
+        {
+          "field": "delivery_date",
+          "change_type": "DELIVERY_DATE_CHANGED",
+          "original_value": "2026-10-15",
+          "revised_value": "2026-11-01",
+          "confidence": "CONFIRMED",
+          "explanation": "Target delivery date extended from 2026-10-15 to 2026-11-01."
+        },
+        {
+          "field": "grand_total",
+          "change_type": "TOTAL_CHANGED",
+          "original_value": 5500.0,
+          "revised_value": 6700.0,
+          "confidence": "CONFIRMED",
+          "explanation": "Grand total changed from $5,500.00 to $6,700.00 (+ $1,200.00)."
+        }
+      ],
+      "expected_line_item_changes": [
+        {
+          "change_type": "RENAMED",
+          "item_name_original": "Managed Kubernetes Control Plane",
+          "item_name_revised": "K8s Managed Control Plane & Orchestrator",
+          "original_value": {
+            "unit_price": 300.0,
+            "quantity": 2.0,
+            "total_price": 600.0
+          },
+          "revised_value": {
+            "unit_price": 300.0,
+            "quantity": 2.0,
+            "total_price": 600.0
+          },
+          "confidence": "CONFIRMED",
+          "explanation": "Renamed from 'Managed Kubernetes Control Plane' to 'K8s Managed Control Plane & Orchestrator' with identical quantities and pricing."
+        },
+        {
+          "change_type": "QUANTITY_CHANGED",
+          "item_name_original": "Dedicated Cloud Compute Node (c6i.4xlarge)",
+          "item_name_revised": "Dedicated Cloud Compute Node (c6i.4xlarge)",
+          "original_value": 4.0,
+          "revised_value": 6.0,
+          "confidence": "CONFIRMED",
+          "explanation": "Quantity increased from 4 to 6 nodes, resulting in line total change from $1,800.00 to $2,700.00."
+        },
+        {
+          "change_type": "UNIT_PRICE_CHANGED",
+          "item_name_original": "Cloud Security & DDoS Shield Enterprise",
+          "item_name_revised": "Cloud Security & DDoS Shield Enterprise",
+          "original_value": 850.0,
+          "revised_value": 950.0,
+          "confidence": "CONFIRMED",
+          "explanation": "Unit price increased from $850.00 to $950.00 per license."
+        },
+        {
+          "change_type": "REMOVED",
+          "item_name_original": "Multi-Region Cloud Load Balancer",
+          "item_name_revised": null,
+          "original_value": {
+            "quantity": 2.0,
+            "unit_price": 150.0,
+            "total_price": 300.0
+          },
+          "revised_value": null,
+          "confidence": "CONFIRMED",
+          "explanation": "Line item 'Multi-Region Cloud Load Balancer' was removed from revised offer."
+        },
+        {
+          "change_type": "ADDED",
+          "item_name_original": null,
+          "item_name_revised": "Automated Disaster Recovery & Backup Replication",
+          "original_value": null,
+          "revised_value": {
+            "quantity": 1.0,
+            "unit_price": 500.0,
+            "total_price": 500.0
+          },
+          "confidence": "CONFIRMED",
+          "explanation": "Newly added service 'Automated Disaster Recovery & Backup Replication' for $500.00."
+        }
+      ],
+      "expected_reordering": {
+        "is_reordered": true,
+        "explanation": "Line items in revised document were reordered across positions 1 through 6."
+      },
+      "expected_arithmetic_audit": {
+        "original_offer": {
+          "is_valid": true,
+          "discrepancies_count": 0,
+          "discrepancies": []
+        },
+        "revised_offer": {
+          "is_valid": false,
+          "discrepancies_count": 1,
+          "discrepancies": [
+            {
+              "location": "Line item: 24/7 DevOps Support & SLA Package",
+              "expected_value": 1000.0,
+              "actual_value": 1200.0,
+              "message": "Calculation mismatch for '24/7 DevOps Support & SLA Package': expected 1000.00 (1.0 * 1000.00), but document states 1200.00"
+            }
+          ]
+        }
+      }
+    },
+    "scenario_2_reformatted": {
+      "scenario_id": "SCENARIO-2-REFORMATTED",
+      "title": "Formatting-Only Variation: Layout & Typography Differences (Zero Commercial Changes)",
+      "baseline_document": "offer_v1.pdf",
+      "revised_document": "offer_v1_reformatted.pdf",
+      "expected_substantive_changes_count": 0,
+      "expected_changes": [],
+      "expected_arithmetic_audit": {
+        "original_offer": {
+          "is_valid": true,
+          "discrepancies_count": 0,
+          "discrepancies": []
+        },
+        "revised_offer": {
+          "is_valid": true,
+          "discrepancies_count": 0,
+          "discrepancies": []
+        }
+      },
+      "notes": "Completely different visual styling, typography, table lines, and header positioning, but exactly identical commercial data. System must report 0 changes."
+    },
+    "scenario_3_ambiguous": {
+      "scenario_id": "SCENARIO-3-AMBIGUOUS",
+      "title": "Ambiguity & Human Clarification: Unclear Item Scope Without Part Code",
+      "baseline_document": "offer_v1.pdf",
+      "revised_document": "offer_v2_ambiguous.pdf",
+      "expected_uncertain_matches_count": 1,
+      "expected_uncertain_matches": [
+        {
+          "item_name_original": "Cloud Security & DDoS Shield Enterprise",
+          "item_name_revised": "Standard IT Infrastructure & Security Services - Tier Variable",
+          "confidence": "UNCERTAIN",
+          "original_value": 850.0,
+          "revised_value": 800.0,
+          "explanation": "Item description is ambiguous and conflates general IT infrastructure with security scope without explicit SKU. Requires user review/clarification."
+        }
+      ],
+      "expected_arithmetic_audit": {
+        "original_offer": {
+          "is_valid": true,
+          "discrepancies_count": 0
+        },
+        "revised_offer": {
+          "is_valid": true,
+          "discrepancies_count": 0
+        }
+      }
+    }
+  }
+}
